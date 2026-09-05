@@ -115,4 +115,16 @@ export class SupplierPaymentPlan {
     get remainingInstallments() {
         return this.totalInstallments - this.paidInstallments;
     }
+
+    /**
+     * Sum of amounts still owed to the supplier — the unpaid installments'
+     * amounts, independent of the underlying purchase order's receipt status
+     * (X6 #12: a credit plan's debt outlives "Recibida").
+     * @returns {number}
+     */
+    get remainingAmount() {
+        return this.installments
+            .filter(installment => !installment.isPaid)
+            .reduce((sum, installment) => sum + installment.amount, 0);
+    }
 }

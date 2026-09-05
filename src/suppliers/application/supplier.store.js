@@ -71,13 +71,26 @@ const useSupplierStore = defineStore('supplier', () => {
     );
 
     /**
-     * Sum of totalAmount for all PENDING or DELAYED purchase orders.
+     * Money still owed overall: totalAmount of PENDING/DELAYED orders that
+     * have no credit plan (not yet received, so not yet paid), plus the
+     * remaining unpaid balance of every outstanding supplier payment plan —
+     * which keeps counting after its order is marked RECEIVED, since a
+     * credit plan's debt is independent of receipt status (X6 #12).
+     * Requires supplierPaymentPlans to be loaded via
+     * fetchPendingSupplierPaymentPlans for the credit-debt half to be accurate.
      * @type {import('vue').ComputedRef<number>}
      */
     const pendingOrderTotal = computed(() => {
-        const total = purchaseOrders.value
-            .filter(order => order.isActionable)
-            .reduce((accumulator, order) => accumulator + order.totalAmount, 0);
+        const plansByOrderId = new Map(
+            supplierPaymentPlans.value.map(plan => [plan.purchaseOrderId, plan])
+        );
+
+        const total = purchaseOrders.value.reduce((accumulator, order) => {
+            const plan = plansByOrderId.get(order.id);
+            if (plan) return accumulator + plan.remainingAmount;
+            if (order.isActionable) return accumulator + order.totalAmount;
+            return accumulator;
+        }, 0);
         return Math.round(total * 100) / 100;
     });
 

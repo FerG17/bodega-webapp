@@ -20,7 +20,7 @@ const {
   delayedOrderCount
 } = toRefs(supplierStore);
 
-const { fetchSuppliers, fetchPurchaseOrders } = supplierStore;
+const { fetchSuppliers, fetchPurchaseOrders, fetchPendingSupplierPaymentPlans } = supplierStore;
 
 // ─── Tab state ─────────────────────────────────────────────────────────────────
 
@@ -79,6 +79,7 @@ onMounted(() => {
       fetchSuppliers();
     }
     fetchPurchaseOrders();
+    fetchPendingSupplierPaymentPlans();
   }
 });
 </script>
