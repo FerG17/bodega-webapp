@@ -307,7 +307,7 @@
     "toast-lot-discard-error": "No se pudo descartar el lote. Inténtalo de nuevo.",
     "btn-edit-lot-expiration": "Editar lote",
     "toast-lot-expiration-invalid": "La fecha de vencimiento no puede estar en el pasado.",
-    "toast-lot-expiration-updated": "Vencimiento del lote actualizado.",
+    "toast-lot-expiration-updated": "Lote actualizado.",
     "toast-lot-expiration-update-error": "No se pudo actualizar el vencimiento. Inténtalo de nuevo.",
     "adjust-modal-title": "Ajustar stock — {name}",
     "adjust-modal-hint": "Para mermas, roturas, robo, o corregir un conteo físico. No está pensado para reemplazar un ingreso normal ni una venta.",
