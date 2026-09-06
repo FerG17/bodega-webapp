@@ -41,6 +41,7 @@ async function submitEmail() {
 }
 
 async function resendCode() {
+  localError.value = '';
   isLoading.value = true;
   const result = await iamStore.requestPasswordReset(email.value);
   isLoading.value = false;

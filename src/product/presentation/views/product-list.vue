@@ -233,8 +233,18 @@ onMounted(() => {
     });
   }
   if (!productStore.batchesLoaded) fetchBatches();
-  if (canViewSuppliers.value && !suppliersLoadedRef.value) supplierStore.fetchSuppliers();
 });
+
+/**
+ * Fetches suppliers as soon as the role check clears, not just at mount —
+ * canViewSuppliers depends on iamStore.currentUserPosition, which stays null
+ * until GET /roles resolves. A mount-time-only check could see canViewSuppliers
+ * as false and never retry once the role actually loads, permanently leaving
+ * the supplier column blank on a cold page load.
+ */
+watch(canViewSuppliers, canView => {
+  if (canView && !suppliersLoadedRef.value) supplierStore.fetchSuppliers();
+}, { immediate: true });
 
 /**
  * Active suppliers, resolved to option labels — the pool the product form's

@@ -65,8 +65,16 @@ export class BaseApi {
                 // again — an unbounded loop of requests that, sharing the
                 // same per-IP auth rate-limit budget as sign-in, exhausted it
                 // in well under a second on a single wrong password.
+                // A business-rule 401 (e.g. ChangePassword's CurrentPasswordInvalid)
+                // comes back as a ProblemDetails body with a `title`, unlike
+                // RequestAuthorizationMiddleware's real session-expiry 401, which
+                // writes the bare status code with no body at all. Without this
+                // check, getting your own current password wrong on the change-
+                // password form fired the same "your session expired" flow as an
+                // actually-stale cookie, even though the session was fine.
                 const isAuthEndpointRequest = error.config?.url?.includes(authenticationEndpointPath);
-                if (error.response?.status === 401 && !isAuthEndpointRequest) {
+                const isBusinessRuleProblem = Boolean(error.response?.data?.title);
+                if (error.response?.status === 401 && !isAuthEndpointRequest && !isBusinessRuleProblem) {
                     window.dispatchEvent(new CustomEvent(SESSION_EXPIRED_EVENT));
                 }
                 return Promise.reject(error);
